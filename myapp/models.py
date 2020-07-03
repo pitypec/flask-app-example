@@ -1,8 +1,15 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
 from datetime import datetime
+from .extensions import db
 
-db = SQLAlchemy()
+
+tags = db.Table('tags',
+                db.Column('user_id', db.Integer,
+                          db.ForeignKey('user.user_id')),
+                db.Column('friend_id', db.Integer,
+                          db.Foreignkey('friend.friend_id'))
+                )
 
 
 class User(db.Model):
@@ -14,38 +21,60 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    joined_date = db.column(
-        db.Datetime, default=datetime.utcnow, nullable=False)
-    profile_picture = db.column(db.string, nullable=False)
-    friends = db.relationship('Friend', backref='user', lazy=True)
+    joined_date = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
+    profile_picture = db.Column(db.String, nullable=False)
+    friend_sender = db.relationship(
+        'Post', primaryjoin='User.user_id == Friend.friend_id', backref='request_sender', lazy='dynamic')
+    friend_receiver = db.relationship(
+        'Post', foreign_keys='User.id == Post.moderated_by', backref='post_blame', lazy='dynamic')
+    posts = db.relationship('Post', backref='user_post', lazy=True)
+
+    def __repr__(self):
+        return '<Task %r>' % self.id
 
 
-class Friends(db.Model):
-    __tablename__ = "posts"
+class Friend(db.Model):
+    __tablename__ = "friend"
     id = db.Column(db.Integer, primary_key=True)
-    friends_list = db.Column(db.String, nullable=False)
-    date_created = db.column(
-        db.datetime, default=datetime.utcnow, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    is_friends = db.Column(db.Boolean, nullable=False)
+    date_created = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
 
 class Post(db.Model):
-    __tablename__ = "posts"
+    __tablename__ = "post"
+    # __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
-    post = db.Column(db.String, nullable=False)
-    date_created = db.column(
-        db.datetime, default=datetime.utcnow, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    post_body = db.Column(db.String, nullable=False)
+    photo = db.Column(db.String, nullable=True)
+    date_created = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    comments = db.relationship(db.Integer, )
 
 
 class Comment(db.Model):
-    __tablename__ = "comments"
-    id = db.Column(db.Integer, primary_key=True)
-    comment = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
+    __tablename__ = "comment"
+    comment_id = db.Column(db.Integer, primary_key=True)
+    comment_body = db.Column(db.String, nullable=False)
     date_created = db.Column(
-        db.Datetime, default=datetime.utcnow, nullabe=False)
+        db.DateTime, default=datetime.utcnow, nullabe=False)
+    post = db.Column(db.Integer, db.Foreignkey("post.id"), nullable=False)
+
+
+class Like(db.Model):
+    __tablename__ = "Like"
+    like_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    Comment_id = db.column(db.Integer, nullable=False)
+    post_id = db.Column(db.Integer, nullable=False)
+    number_of_like = db.Column(db.Integer, nullable=False)
+    date_created = db.Column(
+        db.DateTime, default=datetime.utcnow, nullabe=False)
 
 
 if __name__ == "__main__":
