@@ -1,10 +1,13 @@
 import requests
-
+import os
 from flask import request
 from flask.json import jsonify
 import jwt
 from functools import wraps
-from .models import db
+from .extensions import db
+from .models import User
+
+tokenkey = os.environ.get('TOKEN_KEY')
 
 
 def protected_route(f):
@@ -16,11 +19,10 @@ def protected_route(f):
         if not token:
             return jsonify({"message": "A valid token is required"})
         try:
-            data = jwt.decode(token, tokenKey)
+            data = jwt.decode(token, tokenkey)
             print(data)
-            current_user = db.execute("SELECT * FROM users WHERE user_id = :user_id",
-                                      {"user_id": data['userid']}).first()
-            db.commit()
+            current_user = db.Query.filter_by(id=data['userid']).first()
+            db.session.commit()
         except:
             return jsonify({"message": "Token is invalid"})
         return f(current_user, *args, **kwargs)
@@ -39,13 +41,25 @@ def login_validator(data):
 
 
 def signup_validator(data):
+    if data["email"].isspace():
+        return jsonify({"Error": "Please enter a valid email"})
+    elif len(data["email"]) <= 0:
+        return jsonify({"Error": "field cannot be empty"})
     if data["username"].isspace():
         return jsonify({"Error": "Please enter a valid username"})
     elif len(data["username"]) <= 0:
         return jsonify({"Error": "field cannot be empty"})
-    if data["email"].isspace():
+    if data["firstname"].isspace():
         return jsonify({"Error": "Please enter a valid email"})
-    elif len(data["email"]) <= 0:
+    elif len(data["firstname"]) <= 0:
+        return jsonify({"Error": "field cannot be empty"})
+    if data["middlename"].isspace():
+        return jsonify({"Error": "Please enter a valid email"})
+    elif len(data["middlename"]) <= 0:
+        return jsonify({"Error": "field cannot be empty"})
+    if data["lastname"].isspace():
+        return jsonify({"Error": "Please enter a valid email"})
+    elif len(data["lstname"]) <= 0:
         return jsonify({"Error": "field cannot be empty"})
     if data["password"].isspace():
         return jsonify({"Error": "Please enter a password"})
@@ -56,5 +70,6 @@ def signup_validator(data):
 
 
 def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

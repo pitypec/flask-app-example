@@ -2,80 +2,101 @@ from flask import Flask
 from sqlalchemy.sql import func
 from datetime import datetime
 from .extensions import db
+from flask_login import UserMixin
 
 
-# tags = db.Table('tags',
-#                 db.Column('user_id', db.Integer,
-#                           db.ForeignKey('user.user_id')),
-#                 db.Column('friend_id', db.Integer,
-#                           db.Foreignkey('friend.friend_id'))
-#                 )
-
-
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    firstname = db.Column(db.String, nullable=False)
-    middlename = db.Column(db.String, nullable=False)
-    lastname = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, nullable=False)
-    username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    email = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(30), unique=True, nullable=False)
+    password = db.Column(db.String(30), nullable=False)
     join_date = db.Column(
         db.DateTime, default=datetime.utcnow, nullable=False)
-    posts = db.relationship('Post', backref='user_post', lazy=True)
+    userprofile = db.relationship('Userprofile', backref='user', uselist=False)
+    # friends = db.relationship('Friend', backref='friends', lazy='joined')
+    # posts = db.relationship('Post', backref='user_post', lazy=True)
 
     def __repr__(self):
         return '<Task %r>' % self.id
 
-    # friend_sender = db.relationship(
-    #     'Post', primaryjoin='User.user_id == Friend.friend_id', backref='request_sender', lazy='dynamic')
-    # friend_receiver = db.relationship(
-    #     'Post', foreign_keys='User.id == Post.moderated_by', backref='post_blame', lazy='dynamic')
 
-
-class Friend(db.Model):
-    __tablename__ = "friend"
+class Userprofile(db.Model):
+    __tablename__ = "userprofile"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', foreign_keys=[user_id])
-    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    friend = db.relationship('User', foreign_keys=[friend_id])
-    became_friends = db.Column(
-        db.DateTime, default=datetime.utcnow, nullable=False)
+    firstname = db.Column(db.String(50), nullable=False)
+    middlename = db.Column(db.String(50), nullable=False)
+    lastname = db.Column(db.String(50), nullable=False)
+    location = db.Column(db.String(20), nullable=False)
+    city = db.Column(db.String(20), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'user.id'))
+
+# class ProfileImage(db.Model):
+#     __tablename__ = "profileimage"
+#     id = db.Column(db.Integer, primary_key=True)
+#     path = db.Column(db.String(500), nullable=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
-class Post(db.Model):
-    __tablename__ = "post"
-    # __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True)
-    post_body = db.Column(db.String, nullable=False)
-    photo = db.Column(db.String, nullable=True)
-    date_created = db.Column(
-        db.DateTime, default=datetime.utcnow, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    comments = db.relationship('Comment', backref='associated_comments')
+# class Friend(db.Model):
+#     __tablename__ = "friend"
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     user = db.relationship('User', foreign_keys=[user_id])
+#     friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     friend = db.relationship('User', foreign_keys=[friend_id])
+#     became_friends = db.Column(
+#         db.DateTime, default=datetime.utcnow, nullable=False)
 
 
-class Comment(db.Model):
-    __tablename__ = "comment"
-    id = db.Column(db.Integer, primary_key=True)
-    comment_body = db.Column(db.String, nullable=False)
-    date_created = db.Column(
-        db.DateTime, default=datetime.utcnow, nullabe=False)
-    post = db.Column(db.Integer, db.Foreignkey("post.id"), nullable=False)
+# class Post(db.Model):
+#     __tablename__ = "post"
+#     # __table_args__ = {'extend_existing': True}
+#     id = db.Column(db.Integer, primary_key=True)
+#     post_body = db.Column(db.String(500), nullable=False)
+#     date_created = db.Column(
+#         db.DateTime, default=datetime.utcnow, nullable=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+#     comments = db.relationship(
+#         'Comment', backref='postcomments', lazy='dynamic')
+#     post_image = db.relationship(
+#         'PostImage', backref='postimage', lazy='dynamic')
 
 
-# class Like(db.Model):
-#     __tablename__ = "Like"
+# class PostImage(db.Model):
+#     __tablename__ = "postimage"
+#     id = db.Column(db.Integer, primary_key=True)
+#     path = db.Column(db.String(500), nullable=False)
+#     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+
+
+# class Comment(db.Model):
+#     __tablename__ = "comment"
+#     id = db.Column(db.Integer, primary_key=True)
+#     comment_body = db.Column(db.String, nullable=False)
+#     date_created = db.Column(
+#         db.DateTime, default=datetime.utcnow, nullabe=False)
+#     user_id = db.Column(db.Integer, db.ForiegnKey('user.id'), nullable=False)
+#     post_id = db.Column(db.Integer, db.ForeignKey("post.id"), nullable=False)
+
+
+# class PostLike(db.Model):
+#     __tablename__ = "postlike"
 #     like_id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, nullable=False)
-#     Comment_id = db.column(db.Integer, nullable=False)
-#     post_id = db.Column(db.Integer, nullable=False)
-#     number_of_like = db.Column(db.Integer, nullable=False)
+#     user_id = db.Column(db.Integer, db.Foreignkey('user.id'), nullable=False)
+#     post_id = db.Column(db.Integer, db.Foreignkey('post.id'), nullable=False)
+#     numberof_like = db.Column(db.Integer, nullable=False)
 #     date_created = db.Column(
 #         db.DateTime, default=datetime.utcnow, nullabe=False)
 
 
-if __name__ == "__main__":
-    db.create_all()
+# class CommentLike(db.Model):
+#     __tablename__ = "commentlike"
+#     like_id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.Foreignkey('user.id'), nullable=False)
+#     comment_id = db.Column(
+#         db.Integer, db.Foreignkey('post.id'), nullable=False)
+#     numberof_like = db.Column(db.Integer, nullable=False)
+#     date_created = db.Column(
+#         db.DateTime, default=datetime.utcnow, nullabe=False)
