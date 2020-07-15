@@ -5,5 +5,5 @@ from flask_login import LoginManager
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-admin_user = Admin()
+admin = Admin()
 loginmanager = LoginManager()

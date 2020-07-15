@@ -22,10 +22,10 @@ def index():
         userdata = {
             "email": parsejson["email"],
             "password": parsejson["password"],
-            "confirmpassword": parsejson["confirmpassword"]
         }
         login_validator(userdata)
         data = User.query.filter_by(email=userdata['username']).first()
+        token = ""
         if data is None:
             return jsonify({"Message": "User with email does not exist"})
 

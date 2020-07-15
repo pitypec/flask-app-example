@@ -14,7 +14,6 @@ class User(db.Model, UserMixin):
     join_date = db.Column(
         db.DateTime, default=datetime.utcnow, nullable=False)
     userprofile = db.relationship('Userprofile', backref='user', uselist=False)
-    # friends = db.relationship('Friend', backref='friends', lazy='joined')
     # posts = db.relationship('Post', backref='user_post', lazy=True)
 
     def __repr__(self):
@@ -31,23 +30,27 @@ class Userprofile(db.Model):
     city = db.Column(db.String(20), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey(
         'user.id'))
-
-# class ProfileImage(db.Model):
-#     __tablename__ = "profileimage"
-#     id = db.Column(db.Integer, primary_key=True)
-#     path = db.Column(db.String(500), nullable=False)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    profileimage = db.relationship(
+        'ProfileImage', backref='userprofile', uselist=False)
 
 
-# class Friend(db.Model):
-#     __tablename__ = "friend"
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     user = db.relationship('User', foreign_keys=[user_id])
-#     friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     friend = db.relationship('User', foreign_keys=[friend_id])
-#     became_friends = db.Column(
-#         db.DateTime, default=datetime.utcnow, nullable=False)
+class ProfileImage(db.Model):
+    __tablename__ = "profileimage"
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String(500), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'userprofile.id'), nullable=False)
+
+
+class Friend(db.Model):
+    __tablename__ = "friend"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', foreign_keys=[user_id])
+    friend = db.relationship('User', foreign_keys=[friend_id])
+    became_friends = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 # class Post(db.Model):
