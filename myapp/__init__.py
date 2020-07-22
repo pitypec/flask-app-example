@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from .admin.app import adminbp as admin_blueprint
 from .api.app import api
 from .site.app import site
-from .extensions import bcrypt, db, admin, loginmanager
+from .extensions import bcrypt, db, admin, loginmanager, socketio
 from .commands import create_tables
 
 
@@ -16,6 +16,7 @@ def create_app(config_file='settings.py'):
     db.init_app(app)
     bcrypt.init_app(app)
     admin.init_app(app)
+    socketio.init_app(app)
     loginmanager.init_app(app)
     app.register_blueprint(api)
     app.register_blueprint(site)
