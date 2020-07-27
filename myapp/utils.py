@@ -21,8 +21,9 @@ def protected_route(f):
         try:
             data = jwt.decode(token, tokenkey)
             print(data)
-            current_user = db.Query.filter_by(id=data['userid']).first()
-            db.session.commit()
+            print(data["userid"])
+            current_user = User.query.filter_by(id=data["userid"]).first()
+            print(current_user)
         except:
             return jsonify({"message": "Token is invalid"})
         return f(current_user, *args, **kwargs)
@@ -30,43 +31,67 @@ def protected_route(f):
 
 
 def login_validator(data):
-    if data["email"].isspace():
-        return jsonify({"Error": "please enter a valid email"})
-    elif len(data["email"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
+    errors = {}
+    if data["username"].isspace():
+        errors["username"] = jsonify(
+            {"Error": "please enter a valid username"})
+    elif len(data["username"]) <= 0:
+        errors["username"] = jsonify({"Error": "field cannot be empty"})
     if data["password"].isspace():
-        return jsonify({"Error": "please enter your password"})
+        errors["password"] = jsonify({"Error": "please enter your password"})
     elif len(data["password"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
+        errors["password"] = jsonify(
+            {"Error": "password field cannot be empty"})
+    return errors
 
 
 def signup_validator(data):
+    errors = {}
     if data["email"].isspace():
-        return jsonify({"Error": "Please enter a valid email"})
+        errors["email"] = jsonify({"error": "please enter a valid email"})
     elif len(data["email"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
+        errors["email"] = jsonify({"Error": "field cannot be empty"})
     if data["username"].isspace():
-        return jsonify({"Error": "Please enter a valid username"})
+        errors["username"] = jsonify(
+            {"Error": "Please enter a valid username"})
     elif len(data["username"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
-    if data["firstname"].isspace():
-        return jsonify({"Error": "Please enter a valid email"})
-    elif len(data["firstname"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
-    if data["middlename"].isspace():
-        return jsonify({"Error": "Please enter a valid email"})
-    elif len(data["middlename"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
-    if data["lastname"].isspace():
-        return jsonify({"Error": "Please enter a valid email"})
-    elif len(data["lstname"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
+        errors["username"] = jsonify({"Error": "field cannot be empty"})
     if data["password"].isspace():
-        return jsonify({"Error": "Please enter a password"})
+        errors["password"] = jsonify({"Error": "Please enter a password"})
     elif len(data["password"]) <= 0:
-        return jsonify({"Error": "field cannot be empty"})
+        errors["password"] = jsonify({"Error": "field cannot be empty"})
     if data["confirmpassword"] != data["password"]:
-        return jsonify({"Error": "Password must match"})
+        errors["confirmpassword"] = jsonify({"Error": "Password must match"})
+    return errors
+
+
+def profile_validator(data):
+    errors = {}
+    if data["firstname"].isspace():
+        errors["firstname"] = jsonify(
+            {"Error": "Please enter a valid firstname"})
+    elif len(data["firstname"]) <= 0:
+        errors["middlesname"] = jsonify({"Error": "field cannot be empty"})
+    if data["middlename"].isspace():
+        errors["middlename"] = jsonify(
+            {"Error": "Please enter a valid middlename"})
+    elif len(data["middlename"]) <= 0:
+        errors["middlename"] = jsonify({"Error": "field cannot be empty"})
+    if data["lastname"].isspace():
+        errors["lastname"] = jsonify(
+            {"Error": "Please enter a valid lastname"})
+    elif len(data["lastname"]) <= 0:
+        errors["lastname"] = jsonify({"Error": "field cannot be empty"})
+    if data["location"].isspace():
+        errors["location"] = jsonify(
+            {"Error": "Please enter a valid location"})
+    elif len(data["location"]) <= 0:
+        errors["location"] = jsonify({"Error": "field cannot be empty"})
+    if data["city"].isspace():
+        errors["city"] = jsonify({"Error": "Please enter a valid city"})
+    elif len(data["city"]) <= 0:
+        errors["city"] = jsonify({"Error": "field cannot be empty"})
+    return errors
 
 
 def allowed_file(filename):
