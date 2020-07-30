@@ -17,8 +17,3 @@ class User(MethodView):
 
     def delete(self):
         return 'Deleted an user'
-
-
-@api.route('/')
-def index():
-    return '<h1>Welcome to api</h1>'
