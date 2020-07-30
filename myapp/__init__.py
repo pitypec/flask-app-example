@@ -21,8 +21,8 @@ def create_app(config_file='settings.py'):
     app.register_blueprint(api)
     app.register_blueprint(site)
     app.register_blueprint(admin_blueprint)
-    app.add_url_rule('/user', view_func=User.as_view('user'))
     app.cli.add_command(create_tables)
+    # app.add_url_rule('/user', view_func=User.as_view('user'))
 
     return app
 
