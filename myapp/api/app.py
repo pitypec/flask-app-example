@@ -1,7 +1,8 @@
 from flask import Blueprint
 from flask.views import MethodView
 
-api = Blueprint('api', __name__, template_folder='templates')
+api = Blueprint('api', __name__, url_prefix='/api',
+                template_folder='templates')
 
 
 class User(MethodView):

@@ -10,11 +10,15 @@ from myapp.models import User, Userprofile, ProfileImage, Post, Comment, Friend,
 from myapp.extensions import socketio
 from flask_socketio import emit
 
-site = Blueprint('site', __name__, url_prefix='/site',
-                 template_folder='templates')
+site = Blueprint('site', __name__, template_folder='templates')
 
 UPLOAD_FOLDER = '../images'
 tokenkey = os.environ.get('TOKEN_KEY')
+
+
+@site.route('/')
+def index():
+    return "<h1> Welcome to Social-Buzz</h1>"
 
 
 @site.route('/login', methods=['GET', 'POST'])
