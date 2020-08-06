@@ -6,6 +6,7 @@ import jwt
 from functools import wraps
 from .extensions import db
 from .models import User
+from myapp.status import *
 
 tokenkey = os.environ.get('TOKEN_KEY')
 
@@ -34,34 +35,42 @@ def login_validator(data):
     errors = {}
     if data["username"].isspace():
         errors["username"] = jsonify(
-            {"Error": "please enter a valid username"})
+            {"Error": "please enter a valid username"}), HTTP_400_BAD_REQUEST
     elif len(data["username"]) <= 0:
-        errors["username"] = jsonify({"Error": "field cannot be empty"})
+        errors["username"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["password"].isspace():
-        errors["password"] = jsonify({"Error": "please enter your password"})
+        errors["password"] = jsonify(
+            {"Error": "please enter your password"}), HTTP_400_BAD_REQUEST
     elif len(data["password"]) <= 0:
         errors["password"] = jsonify(
-            {"Error": "password field cannot be empty"})
+            {"Error": "password field cannot be empty"}), HTTP_400_BAD_REQUEST
     return errors
 
 
 def signup_validator(data):
     errors = {}
     if data["email"].isspace():
-        errors["email"] = jsonify({"error": "please enter a valid email"})
+        errors["email"] = jsonify(
+            {"error": "please enter a valid email"}), HTTP_400_BAD_REQUEST
     elif len(data["email"]) <= 0:
-        errors["email"] = jsonify({"Error": "field cannot be empty"})
+        errors["email"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["username"].isspace():
         errors["username"] = jsonify(
-            {"Error": "Please enter a valid username"})
+            {"Error": "Please enter a valid username"}), HTTP_400_BAD_REQUEST
     elif len(data["username"]) <= 0:
-        errors["username"] = jsonify({"Error": "field cannot be empty"})
+        errors["username"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["password"].isspace():
-        errors["password"] = jsonify({"Error": "Please enter a password"})
+        errors["password"] = jsonify(
+            {"Error": "Please enter a password"}), HTTP_400_BAD_REQUEST
     elif len(data["password"]) <= 0:
-        errors["password"] = jsonify({"Error": "field cannot be empty"})
+        errors["password"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["confirmpassword"] != data["password"]:
-        errors["confirmpassword"] = jsonify({"Error": "Password must match"})
+        errors["confirmpassword"] = jsonify(
+            {"Error": "Password must match"}), HTTP_400_BAD_REQUEST
     return errors
 
 
@@ -69,28 +78,34 @@ def profile_validator(data):
     errors = {}
     if data["firstname"].isspace():
         errors["firstname"] = jsonify(
-            {"Error": "Please enter a valid firstname"})
+            {"Error": "Please enter a valid firstname"}), HTTP_400_BAD_REQUEST
     elif len(data["firstname"]) <= 0:
-        errors["middlesname"] = jsonify({"Error": "field cannot be empty"})
+        errors["middlesname"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["middlename"].isspace():
         errors["middlename"] = jsonify(
-            {"Error": "Please enter a valid middlename"})
+            {"Error": "Please enter a valid middlename"}), HTTP_400_BAD_REQUEST
     elif len(data["middlename"]) <= 0:
-        errors["middlename"] = jsonify({"Error": "field cannot be empty"})
+        errors["middlename"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["lastname"].isspace():
         errors["lastname"] = jsonify(
-            {"Error": "Please enter a valid lastname"})
+            {"Error": "Please enter a valid lastname"}), HTTP_400_BAD_REQUEST
     elif len(data["lastname"]) <= 0:
-        errors["lastname"] = jsonify({"Error": "field cannot be empty"})
+        errors["lastname"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["location"].isspace():
         errors["location"] = jsonify(
-            {"Error": "Please enter a valid location"})
+            {"Error": "Please enter a valid location"}), HTTP_400_BAD_REQUEST
     elif len(data["location"]) <= 0:
-        errors["location"] = jsonify({"Error": "field cannot be empty"})
+        errors["location"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     if data["city"].isspace():
-        errors["city"] = jsonify({"Error": "Please enter a valid city"})
+        errors["city"] = jsonify(
+            {"Error": "Please enter a valid city"}), HTTP_400_BAD_REQUEST
     elif len(data["city"]) <= 0:
-        errors["city"] = jsonify({"Error": "field cannot be empty"})
+        errors["city"] = jsonify(
+            {"Error": "field cannot be empty"}), HTTP_400_BAD_REQUEST
     return errors
 
 
