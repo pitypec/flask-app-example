@@ -19,7 +19,7 @@ tokenkey = os.environ.get('TOKEN_KEY')
 
 @site.route('/')
 def index():
-    return "<h1> Welcome to Social-Buzz</h1>"
+    return "<h1> Welcome to Social-Buzz Api Documentation </h1>"
 
 
 @site.route('/login', methods=['GET', 'POST'])
